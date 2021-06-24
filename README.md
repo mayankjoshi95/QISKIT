@@ -1,4 +1,4 @@
-# QISKIT for each result of mesurement  
+# QISKIT program for AER simulator
 qc=QuantumCircuit(2,2)
 qc.h(0)
 qc.cx(0, 1)

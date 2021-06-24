@@ -77,7 +77,7 @@ count=result.get_statevector(qc1)
 plot_state_qsphere(count)
 
 
-#unitary representation
+#unitary vector representation
 from qiskit import*
 qc=QuantumCircuit(2)
 qc.ch(0,1)
@@ -85,6 +85,26 @@ backend=Aer.get_backend('unitary_simulator')
 result=execute(qc,backend,shots=1024).result()
 count=result.get_unitary(qc)
 print(count)
+
+#generating noise models
+from qiskit import*
+from qiskit.providers.aer.noise import NoiseModel
+from qiskit.visualization import plot_histogram
+IBMQ.load_account()
+qc = QuantumCircuit(2, 2)
+qc.h(0)
+qc.cx(0, 1)
+qc.measure([0, 1], [0, 1])
+backend=provider.get_backend('ibmq_16_melbourne')
+noisemodel=NoiseModel.from_backend(backend)
+couplingmap=backend.configuration().coupling_map
+basis_gates=noisemodel.basis_gates
+result=execute(qc,Aer.get_backend('qasm_simulator'),basis_gates=basis_gates,coupling_map=couplingmap,noise_model=noisemodel).result()
+counts=result.get_counts(qc)
+plot_histogram(counts)
+
+
+
 
 
 

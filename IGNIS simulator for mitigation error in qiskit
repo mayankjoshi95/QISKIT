@@ -1,1 +1,29 @@
-
+#program showing decoherence effect where running test circuit for few identity gate it stays 1 but for say 4000 identity circuit it goes back to 0
+import qiskit
+from qiskit import*
+from qiskit import ignis
+from qiskit.visualization import plot_histogram
+import numpy as np
+import matplotlib.pyplot as plt
+from qiskit.providers.aer.noise import NoiseModel
+from qiskit.providers.aer.noise.errors.standard_errors import amplitude_damping_error,phase_damping_error
+from qiskit.ignis.characterization.coherence import t1_circuits, t2_circuits, t2star_circuits
+from qiskit.ignis.characterization.coherence import T1Fitter ,T2Fitter,T2StarFitter
+num_of_gates=np.append((np.linspace(1,100,12)).astype(int),np.array([200,400,800,1000,2000,4000]))
+gate_time=.1
+qubits=[0]
+print(num_of_gates)
+test_circuits,delay_times=t1_circuits(num_of_gates,gate_time,qubits)
+print(delay_times)
+test_circuits[0].draw('mpl')
+test_circuits[1].draw('mpl')
+t1=20
+lam=np.exp(-gate_time/t1)
+error=amplitude_damping_error(1-lam)
+noise_model=NoiseModel()
+noise_model.add_quantum_error(error,'id',[0])
+backend=Aer.get_backend('qasm_simulator')
+shots=200
+result=execute(test_circuits,backend,shots=shots,noise_model=noise_model).result()
+counts=result.get_counts(len(test_circuits)-1)
+plot_histogram(counts)

@@ -104,6 +104,33 @@ counts=result.get_counts(qc)
 plot_histogram(counts)
 
 
+#readout error
+from qiskit import*
+from qiskit.providers.aer.noise import depolarizing_error
+from qiskit.providers.aer.noise import ReadoutError, noise_model,NoiseModel
+from qiskit.visualization import plot_histogram
+single_qubit_gate_p=.25
+multi_qubit_gate_p=.1
+single_error=depolarizing_error(single_qubit_gate_p,1)
+multiple_error=depolarizing_error(multi_qubit_gate_p,2)
+noise_model=NoiseModel()
+noise_model.add_all_qubit_quantum_error(single_error,['u2'])
+noise_model.add_all_qubit_quantum_error(multiple_error,['cx'])
+print(noise_model)
+po_1=.7
+p1_o=.2
+po=1-po_1
+p1=1-p1_o
+readout_error=ReadoutError([[po,po_1],[p1_o,p1]])
+noise_model.add_readout_error(readout_error,[0])
+qc_error = QuantumCircuit(2,2)
+qc_error.h(0)
+qc_error.cx(0,1)
+qc_error.measure(range(2), range(2)
+simulator = Aer.get_backend('qasm_simulator)
+result = execute(qc_error, simulator, shots=1024, basis_gates=noise_model.basis_gates, noise_model=noise_model).result()
+counts = result.get_counts(qc_error)
+plot_histogram(counts)
 
 
 
